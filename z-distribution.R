@@ -1,8 +1,8 @@
-mean <- 5
-popsd <- 2
+mean <- 6
+popsd <- 2.5
 n <- 20
 sd <- popsd/sqrt(n)
-error <- qnorm(0.95)*sd
+error <- qnorm(0.975)*sd
 lb <- a-error
 ub <- a+error
 
