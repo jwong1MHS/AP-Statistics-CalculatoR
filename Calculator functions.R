@@ -8,14 +8,25 @@ signs = as.numeric(data[,6])
 #1,2,3.4.5
 #5 num summary, mean, stddev, sum(x), sum(x^2), pop stdddev
 #1, 1.5, 3, 4.5, 5, 3, 1.58, 15, 55, 1.41
-x <- c(1, 2, 3, 4, 5)
-summary <- summary(x, verbose = show.info)
+x <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+n <- length(x)
+dat <- c(mean(x), sum(x), sum(x^2), sd(x), sqrt((n-1)/n) * sd(x), n, quantile(x))    
+names(dat) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "minX", "Q1", "Med", "Q3", "maxX")
+print(signif(dat, digits = 5))
 
 
 #2 Var Stats
 #1, 2, 3, 4, 5 and 6, 7, 8, 9, 10
 #min1, min2, max1, max2, mean1, mean2, stddev1, stddev2, sum(x)1, sum(x)2, sum(x^2)1, sum(x^2)2, popstddev(x)1, popstd(y)2, sum(xy)
 #1, 6, 5, 10, 3, 8, 1.58, 1.58, 15, 40, 55, 330, 1.41, 1.41, 130
+x <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+y <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
+n <- length(x & y)
+dat <- c(mean(x), sum(x), sum(x^2), sd(x), sqrt((n-1)/n) * sd(x), n, mean(y), sum(y), sum(y^2), sd(y), 
+         sqrt((n-1)/n) * sd(y), sum(x * y), min(x), max(x), min(y), max(y))
+names(dat) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "Mean of y", "Sum of y", 
+                "Sum of y^2", "Sample Std Error of y", "Pop Std Error of y", "Sum of x*y", "minX", "maxX", "minY", "maxY")
+print(signif(dat, digits = 5))
 
 
 #LinReg
@@ -100,9 +111,9 @@ t.test2( mean(x1), mean(x2), sd(x1), sd(x2), 100, 200)
 # equal.variance: whether or not to assume equal variance. Default is FALSE. 
 t.test2 <- function(m1,m2,s1,s2,n1,n2,m0=0,equal.variance=FALSE)
 {
-  if( equal.variance==FALSE ) 
+  if(equal.variance == FALSE) 
   {
-    se <- sqrt( (s1^2/n1) + (s2^2/n2) )
+    se <- sqrt(s1^2/n1 + s2^2/n2)
     # welch-satterthwaite df
     df <- ( (s1^2/n1 + s2^2/n2)^2 )/( (s1^2/n1)^2/(n1-1) + (s2^2/n2)^2/(n2-1) )
   } else
@@ -116,10 +127,11 @@ t.test2 <- function(m1,m2,s1,s2,n1,n2,m0=0,equal.variance=FALSE)
   names(dat) <- c("Difference of means", "Std Error", "t", "p-value")
   return(dat) 
 }
+
 x1 = rnorm(100)
 x2 = rnorm(200) 
 # you'll find this output agrees with that of t.test when you input x1,x2
-t.test2( mean(x1), mean(x2), sd(x1), sd(x2), 100, 200)
+t.test2(mean(x1), mean(x2), sd(x1), sd(x2), 100, 200)
 
 
 #1-PropZtest
