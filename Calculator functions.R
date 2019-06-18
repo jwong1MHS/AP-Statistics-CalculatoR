@@ -9,9 +9,9 @@ signs = as.numeric(data[,6])
 #5 num summary, mean, stddev, sum(x), sum(x^2), pop stdddev
 #1, 1.5, 3, 4.5, 5, 3, 1.58, 15, 55, 1.41
 L1 <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
-n <- length(x)
+n <- length(L1)
 result <- c(mean(L1), sum(L1), sum(L1^2), sd(L1), sqrt((n-1)/n) * sd(L1), n, quantile(L1))    
-names(result) <- c("x-bar", "Σx", "Σx^2", "Sx", "σx", "n", "minX", "Q1", "Med", "Q3", "maxX")
+names(result) <- c("x-bar", "Sum of x", "Sum of x^2", "Sample SE of x", "Pop SE of x", "n", "minX", "Q1", "Med", "Q3", "maxX")
 print(result)
 
 
@@ -24,7 +24,8 @@ L2 <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
 n <- length(L1 & L2)
 result <- c(mean(L1), sum(L1), sum(L1^2), sd(L1), sqrt((n-1)/n) * sd(L1), n, mean(L2), sum(L2), sum(L2^2), sd(L2), 
          sqrt((n-1)/n) * sd(L2), sum(L1 * L2), min(L1), max(L1), min(L2), max(L2))
-names(result) <- c("x-bar", "Σx", "Σx^2", "Sx", "σx", "n", "y-bar", "Σy", "Σy^2", "Sy", "σy", "Σxy", "minX", "maxX", "minY", "maxY")
+names(result) <- c("x-bar", "Sum of x", "Sum of x^2", "Sample SE of x", "Pop SE of x", "n", "y-bar", "Sum of y", "Sum of y^2", 
+                   "Sample SE of y", "Pop SE of y", "Sum of xy", "minX", "maxX", "minY", "maxY")
 print(result)
 
 
@@ -164,36 +165,57 @@ z.test(59/100, y = NULL, alternative = "two.sided", mu = 0.7, sigma.x = sqrt(0.7
 
 
 #2-PropZtest
+#x1, n1, x2, n2, inequality sign
 prop.test(x = c(490, 400), n = c(500, 500))
 prop.test(x = c(490, 400), n = c(500, 500))$p.value
 
 
 #ZInterval
+#sigma, x-bar, n, confidence level
 prop.test(x = 59, n = 100, p = 0.7)$conf.int
 
 
 #Tinterval
+#x-bar, sample std error, n, confidence level
 
 
 #2-SampTint
-
+# x1, x2: the sample means
+# s1, s2: the sample standard deviations
+# n1, n2: the same sizes
+# pooled: whether or not to assume equal variance. Default is FALSE. 
+#inequality sign
 
 
 #2-PropZint
+#x1, n1, x2, n2, inequality sign
 prop.test(x = c(490, 400), n = c(500, 500))$conf.int
 
+#----------------------------------------------------------FINISHED------------------------------------------------------
 
 #Chi squared test
-chisq.test
+obs <- c(30, 10, 15, 25, 15, 5)
+newobs <- matrix(obs, nrow = 3, ncol = 2, byrow=TRUE)
+exp <- c(24, 16, 24, 16, 12, 8)
+newexp <- matrix(exp/sum(exp), nrow = 3, ncol = 2, byrow=TRUE)
+res <- chisq.test(newobs, p = newexp)
+chi_squared <- chisq.test(newobs, p = newexp)$statistic
+p <- chisq.test(newobs, p = newexp)$p.value
+df <- chisq.test(newobs, p = newexp)$parameter
+cat(paste0("X2-Test\nX2 = ", chi_squared, "\np = ", p, "\ndf = ", df))
 
-chisq_gof
+
 #Chi squared GOF test
-obs <- c(81, 50, 27)
-exp <- c(1/2, 1/3, 1/6)
-res <- chisq.test(obs, p = exp)
-chisq.test(obs, p = exp)$expected
+obs <- c(4, 13, 7)
+exp <- c(8, 8, 8)
+exp2 <- c(exp/sum(exp))
+res <- chisq.test(obs, p = exp2)
+chi_squared <- chisq.test(obs, p = exp2)$statistic
+p <- chisq.test(obs, p = exp2)$p.value
+df <- chisq.test(obs, p = exp2)$parameter
+CNTRB <- (obs - exp)^2/exp
+cat(paste0("X2GOF-Test\nX2 = ", chi_squared, "\np = ", p, "\ndf = ", df, "\nCNTRB = {", paste(CNTRB, collapse = ", "), "}"))
 
-#----------------------------------------------------------FINISHED------------------------------------------------------
 
 #LinReg T test
 explanatory <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
@@ -207,7 +229,7 @@ t <- summary(model)$coefficients[6]
 p <- summary(model)$coefficients[8]
 r_squared <- summary(model)$r.squared
 r <- cor(response, explanatory)
-cat(paste0("y = a + bx\nβ ≠ 0\nt = ", t, "\np = ", p, "\ndf = ", df, "\na = ", a, "\nb = ", b, "\ns = ", s, "\nr^2 = ", r_squared, "\nr = ", r))
+cat(paste0("LinRegTTest\ny = a + bx\nβ ≠ 0\nt = ", t, "\np = ", p, "\ndf = ", df, "\na = ", a, "\nb = ", b, "\ns = ", s, "\nr^2 = ", r_squared, "\nr = ", r))
 
 
 #LinReg T Int
@@ -223,5 +245,5 @@ r <- cor(response, explanatory)
 interval <- confint(model, 'explanatory', level=0.95)
 lower <- interval[1]
 upper <- interval[2]
-cat(paste0("y = a + bx\n(", lower, ", ", upper, ")\nb = ", b, "\ndf = ", df, "\ns = ", s, "\na = ", a, "\nr^2 = ", r_squared, "\nr = ", r))
+cat(paste0("LinRegTInt\ny = a + bx\n(", lower, ", ", upper, ")\nb = ", b, "\ndf = ", df, "\ns = ", s, "\na = ", a, "\nr^2 = ", r_squared, "\nr = ", r))
 
