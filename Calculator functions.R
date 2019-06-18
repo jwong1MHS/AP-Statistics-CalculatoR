@@ -8,78 +8,99 @@ signs = as.numeric(data[,6])
 #1,2,3.4.5
 #5 num summary, mean, stddev, sum(x), sum(x^2), pop stdddev
 #1, 1.5, 3, 4.5, 5, 3, 1.58, 15, 55, 1.41
-x <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+L1 <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
 n <- length(x)
-dat <- c(mean(x), sum(x), sum(x^2), sd(x), sqrt((n-1)/n) * sd(x), n, quantile(x))    
-names(dat) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "minX", "Q1", "Med", "Q3", "maxX")
-print(signif(dat, digits = 5))
+result <- c(mean(L1), sum(L1), sum(L1^2), sd(L1), sqrt((n-1)/n) * sd(L1), n, quantile(L1))    
+names(result) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "minX", "Q1", "Med", "Q3", "maxX")
+print(result)
 
 
 #2 Var Stats
 #1, 2, 3, 4, 5 and 6, 7, 8, 9, 10
 #min1, min2, max1, max2, mean1, mean2, stddev1, stddev2, sum(x)1, sum(x)2, sum(x^2)1, sum(x^2)2, popstddev(x)1, popstd(y)2, sum(xy)
 #1, 6, 5, 10, 3, 8, 1.58, 1.58, 15, 40, 55, 330, 1.41, 1.41, 130
-x <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
-y <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
-n <- length(x & y)
-dat <- c(mean(x), sum(x), sum(x^2), sd(x), sqrt((n-1)/n) * sd(x), n, mean(y), sum(y), sum(y^2), sd(y), 
-         sqrt((n-1)/n) * sd(y), sum(x * y), min(x), max(x), min(y), max(y))
-names(dat) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "Mean of y", "Sum of y", 
+L1 <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+L2 <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
+n <- length(L1 & L2)
+result <- c(mean(L1), sum(L1), sum(L1^2), sd(L1), sqrt((n-1)/n) * sd(L1), n, mean(L2), sum(L2), sum(L2^2), sd(L2), 
+         sqrt((n-1)/n) * sd(L2), sum(L1 * L2), min(L1), max(L1), min(L2), max(L2))
+names(result) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "Mean of y", "Sum of y", 
                 "Sum of y^2", "Sample Std Error of y", "Pop Std Error of y", "Sum of x*y", "minX", "maxX", "minY", "maxY")
-print(signif(dat, digits = 5))
+print(result)
 
 
 #LinReg
 #input values, and generates a linear model, gives you a coefficieent, b coefficent, r, and r^2
-cor(signs, rate)
-model = lm(rate ~ signs)
-summary(model)
+explanatory <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+response <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
+model <- lm(response ~ explanatory)
+a <- summary(model)$coefficients["(Intercept)", "Estimate"]
+b <- summary(model)$coefficients["explanatory", "Estimate"]
+cat(paste0("y = a + bx\na = ", a, "\nb = ", b))
 
 
 #invNorm - z-value
 #area, mu, sigma
-qnorm(0.8, mean = 15, sd = 4)
+area <- 0.84
+mean <- 15
+sd <- 4
+qnorm(area, mean, sd)
 
 
 #Normalcdf - area
 #lower, upper, mu, sigma, outputs probability
 #0, 15, 8, 6, output 0.787
-pnorm(15, mean = 8, sd = 6) - pnorm(0, mean = 8, sd = 6)
+lower <- 0
+upper <- 15
+mean <- 8
+sd <- 6
+pnorm(upper, mean, sd) - pnorm(lower, mean, sd)
 
 
 #invT - t-value
 #area, df
-qt(0.8, df = 13)
+area <- 0.8
+df <- 13
+qt(area, df)
 
 
 #Tcdf
 #lower, upper, df
-pt(15, df = 7) - pt(0, df = 7)
+lower <- 0
+upper <- 15
+df <- 7
+pt(upper, df) - pt(lower, df)
 
 
 #Binompdf
-#x-value, n, p
-x <- 14
-n <- 20
+#n, p, x trials
+trials <- 20
 p <- 0.3
-pbinom(x, n, p) - pbinom(x - 1, n, p)
+x_value <- 14
+pbinom(x_value, trials, p) - pbinom(x_value - 1, trials, p)
 
 
 #Binomcdf
-#x-value, n, p
-pbinom(3, 8, 0.6)
+#n, p, x trials
+trials <- 20
+p <- 0.3
+x_value <- 14
+pbinom(x_value, trials, p)
 
 
 #Geometpdf
 #p, x
-x <- 14
 p <- 0.3
+x <- 14
 pgeom(x - 1, p) - pgeom(x - 2, p)
 
 
 #Geometcdf
+p <- 0.3
+x <- 14
 pgeom(x - 1, p)
 
+#--------------------------------------------------------DO NOT ENTER----------------------------------------------------------------
 
 #T-test
 # m: the sample mean
@@ -166,7 +187,7 @@ prop.test(x = c(490, 400), n = c(500, 500))$conf.int
 #Chi squared test
 chisq.test
 
-
+chisq_gof
 #Chi squared GOF test
 obs <- c(81, 50, 27)
 exp <- c(1/2, 1/3, 1/6)
@@ -180,5 +201,17 @@ summary(model)
 
 
 #LinReg T Int
-predict(model, data.frame(signs=2), interval = "confidence", level = 0.95)
-predict(model, data.frame(signs=2), interval = "prediction", level = 0.95)
+explanatory <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+response <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
+model <- lm(response ~ explanatory)
+a <- summary(model)$coefficients["(Intercept)", "Estimate"]
+b <- summary(model)$coefficients["explanatory", "Estimate"]
+df <- model$df.residual
+s <- 1
+r_squared <- 1
+r <- cor(response, explanatory)
+interval <- confint(model, 'explanatory', level=0.95)
+lower <- interval[1]
+upper <- interval[2]
+cat(paste0("y = a + bx\n(", lower, ", ", upper, ")\nb = ", b, "\ndf = ", df, "\na = ", a))
+
