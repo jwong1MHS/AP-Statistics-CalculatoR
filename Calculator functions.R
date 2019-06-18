@@ -103,65 +103,55 @@ pgeom(x - 1, p)
 #--------------------------------------------------------DO NOT ENTER----------------------------------------------------------------
 
 #T-test
-# m: the sample mean
-# s: the sample standard deviation
-# n: the same sizes
-# m0: the null value for the difference in means to be tested for. Default is 0. 
-# equal.variance: whether or not to assume equal variance. Default is FALSE. 
-t.test2 <- function(m,s,n)
-{
-  se <- sqrt(s^2/n)
-  df <- n - 1
 
-  t <- m1/se 
-  dat <- c(m1, se, t, 2*pt(-abs(t),df))    
-  names(dat) <- c("Std Error", "t", "p-value")
-  return(dat) 
-}
-x1 = rnorm(100)
-x2 = rnorm(200) 
-# you'll find this output agrees with that of t.test when you input x1,x2
-t.test2( mean(x1), mean(x2), sd(x1), sd(x2), 100, 200)
+mu <- 1.6
+x <- 1.3
+s <- 0.09
+n <- 24
+
+df <- n - 1
+t <- (x - mu) / sqrt(s^2/n)
+p <- 2 * pt(-abs(t),df)
+cat(paste0("1-SampTTest \nmu != ", mu, " \nt = ", t, " \np-value = ", p, "\nx = ", x, "\ns = ", s, " \nn = ", n))
 
 
 #2-SampTTest
-# m1, m2: the sample means
-# s1, s2: the sample standard deviations
-# n1, n2: the same sizes
-# m0: the null value for the difference in means to be tested for. Default is 0. 
-# equal.variance: whether or not to assume equal variance. Default is FALSE. 
-t.test2 <- function(m1,m2,s1,s2,n1,n2,m0=0,equal.variance=FALSE)
+
+x1 <- 0.06816336
+s1 <- 1.218701
+n1 <- 100
+x2 <- -0.07430414
+s2 <- 1.044537
+n2 <- 200
+pooled <- FALSE
+
+if(pooled == FALSE) 
 {
-  if(equal.variance == FALSE) 
-  {
-    se <- sqrt(s1^2/n1 + s2^2/n2)
-    # welch-satterthwaite df
-    df <- ( (s1^2/n1 + s2^2/n2)^2 )/( (s1^2/n1)^2/(n1-1) + (s2^2/n2)^2/(n2-1) )
-  } else
-  {
-    # pooled standard deviation, scaled by the sample sizes
-    se <- sqrt( (1/n1 + 1/n2) * ((n1-1)*s1^2 + (n2-1)*s2^2)/(n1+n2-2) ) 
-    df <- n1+n2-2
-  }      
-  t <- (m1-m2-m0)/se 
-  dat <- c(m1-m2, se, t, 2*pt(-abs(t),df))    
-  names(dat) <- c("Difference of means", "Std Error", "t", "p-value")
-  return(dat) 
+  se <- sqrt(s1^2/n1 + s2^2/n2)
+  # welch-satterthwaite df
+  df <- ( (s1^2/n1 + s2^2/n2)^2 )/( (s1^2/n1)^2/(n1-1) + (s2^2/n2)^2/(n2-1) )
+} else {
+  # pooled standard deviation, scaled by the sample sizes
+  se <- sqrt( (1/n1 + 1/n2) * ((n1-1)*s1^2 + (n2-1)*s2^2)/(n1+n2-2) ) 
+  df <- n1 + n2 - 2
 }
 
-x1 = rnorm(100)
-x2 = rnorm(200) 
-# you'll find this output agrees with that of t.test when you input x1,x2
-t.test2(mean(x1), mean(x2), sd(x1), sd(x2), 100, 200)
+t <- (x1 - x2) / se 
+p <- 2 * pt(-abs(t),df)
+cat(paste0("2-SampTTest \nmu1 != mu2 \nt = ", t, " \np-value = ", p, " \ndf = ", df, " \nx1 = ", x1, " \nx2 = ", x2, 
+           " \ns1 = ", s1, " \ns2 = ", s2, " \nn1 = ", n1, " \nn2 = ", n2))
 
-
+   
 #1-PropZtest
 #p0, x, n, inequality sign
 #0.7, 59, 100, two-sided
-prop.test(x = 59, n = 100, p = 0.7)
-prop.test(x = 59, n = 100, p = 0.7)$p.value
-z.test(59/100, y = NULL, alternative = "two.sided", mu = 0.7, sigma.x = sqrt(0.7*(1-0.7)),
-       sigma.y = NULL, conf.level = 0.95)
+p0 <- 0.7
+x <- 59
+n <- 100
+p <- x/n
+z <- (p - p0)/sqrt(p0 * (1 - p0) / n)
+pval = 2 * pnorm(-abs(z))
+cat(paste0("1-PropZTest \nmu1 != mu2 \nz = ", z, " \np-value = ", pval, " \np-hat = ", p, " \nn = ", n))
 
 
 #2-PropZtest
@@ -169,10 +159,50 @@ z.test(59/100, y = NULL, alternative = "two.sided", mu = 0.7, sigma.x = sqrt(0.7
 prop.test(x = c(490, 400), n = c(500, 500))
 prop.test(x = c(490, 400), n = c(500, 500))$p.value
 
+x1 <- 400
+n1 <- 500
+p1 <- x1/n1
+x2 <- 490
+n2 <- 500
+p2 <- x2/n2
+p <- (x1 + x2)/(n1 + n2)
+z <- (p1 - p2)/sqrt(p * (1 - p) * (1 / n1 + 1 / n2))
+pval = 2 * pnorm(-abs(z))
+print(pval)
+cat(paste0("1-PropZTest \nmu1 != mu2 \nz = ", z, " \np-value = ", pval, " \np-hat = ", p, " \np-hat 1 = ", p1, " \np-hat 2 = ", p2, 
+           " \np-hat = ", p, " \nn1 = ", n1, "\nn2 = ", n2))
+
 
 #ZInterval
 #sigma, x-bar, n, confidence level
-prop.test(x = 59, n = 100, p = 0.7)$conf.int
+
+sigma <- 400
+x_bar <- 500
+n <- 500
+c <- 0.95
+
+z <- qnorm(c + (1 - c)/2)
+se <- sigma/sqrt(n)
+lower <- x - z * se
+upper <- x + z * se
+
+#Graph
+x <- seq(-4,4,length=100)*se + x_bar
+hx <- dnorm(x,x_bar,se)
+
+plot(x, hx, type="n", xlab="Means", ylab="",
+     main="Normal Distribution", axes=FALSE)
+
+i <- x >= lower & x <= upper
+lines(x, hx)
+polygon(c(lower,x[i],upper), c(0,hx[i],0), col="red") 
+
+area <- pnorm(upper, x_bar, se) - pnorm(lower, x_bar, se)
+result <- paste("P(",lower,"< mean <",upper,") =",
+                signif(area, digits=3))
+mtext(result,3)
+axis(1, at=seq(x_bar-3*se, x_bar+3*se, se), pos=0)
+
 
 
 #Tinterval
@@ -186,10 +216,73 @@ prop.test(x = 59, n = 100, p = 0.7)$conf.int
 # pooled: whether or not to assume equal variance. Default is FALSE. 
 #inequality sign
 
+#1-PropZint
+x <- 400
+n <- 500
+p <- x/n
+c <- 0.95
+
+z <- qnorm(c + (1 - c)/2)
+se <- sqrt(p * (1 - p) / n)
+lower <- p - z * se
+upper <- p + z * se
+
+cat(paste0("1-PropZInt \n(", lower, ", ", upper, ") \np-hat = ", p, " \nn = ", n))
+
+#Graph
+x <- seq(-4,4,length=100)*se + p
+hx <- dnorm(x,p,se)
+
+plot(x, hx, type="n", xlab="Proportions", ylab="",
+     main="Normal Distribution", axes=FALSE)
+
+i <- x >= lower & x <= upper
+lines(x, hx)
+polygon(c(lower,x[i],upper), c(0,hx[i],0), col="red") 
+
+area <- pnorm(upper, p, se) - pnorm(lower, p, se)
+result <- paste("P(",lower,"< p <",upper,") =",
+                signif(area, digits=3))
+mtext(result,3)
+axis(1, at=seq(p-3*se, p+3*se, se), pos=0)
+
 
 #2-PropZint
 #x1, n1, x2, n2, inequality sign
-prop.test(x = c(490, 400), n = c(500, 500))$conf.int
+
+x1 <- 400
+n1 <- 500
+p1 <- x1/n1
+x2 <- 490
+n2 <- 500
+p2 <- x2/n2
+c <- 0.95
+
+z <- qnorm(c + (1 - c)/2)
+se <- sqrt(p1 * (1 - p1) / n1 + p2 *(1 - p2) / n2)
+p <- p1 - p2
+lower <- p - z * se
+upper <- p + z * se
+
+cat(paste0("2-PropZInt \n(", lower, ", ", upper, ") \np1 = ", p1, " \np2 = ", p2, " \nn1 = ", n1, "\nn2 = ", n2))
+
+#Graph
+x <- seq(-4,4,length=100)*se + p
+hx <- dnorm(x,p,se)
+
+plot(x, hx, type="n", xlab="Proportions", ylab="",
+     main="Normal Distribution", axes=FALSE)
+
+i <- x >= lower & x <= upper
+lines(x, hx)
+polygon(c(lower,x[i],upper), c(0,hx[i],0), col="red") 
+
+area <- pnorm(upper, p, se) - pnorm(lower, p, se)
+result <- paste("P(",lower,"< p <",upper,") =",
+                signif(area, digits=3))
+mtext(result,3)
+axis(1, at=seq(p-3*se, p+3*se, se), pos=0)
+
 
 #----------------------------------------------------------FINISHED------------------------------------------------------
 
@@ -200,9 +293,9 @@ exp <- c(24, 16, 24, 16, 12, 8)
 newexp <- matrix(exp/sum(exp), nrow = 3, ncol = 2, byrow=TRUE)
 res <- chisq.test(newobs, p = newexp)
 chi_squared <- chisq.test(newobs, p = newexp)$statistic
-p <- chisq.test(newobs, p = newexp)$p.value
+p-value <- chisq.test(newobs, p = newexp)$p.value
 df <- chisq.test(newobs, p = newexp)$parameter
-cat(paste0("X2-Test\nX2 = ", chi_squared, "\np = ", p, "\ndf = ", df))
+cat(paste0("X2-Test \nX2 = ", chi_squared, " \np-value = ", p-value, " \ndf = ", df))
 
 
 #Chi squared GOF test
@@ -211,10 +304,10 @@ exp <- c(8, 8, 8)
 exp2 <- c(exp/sum(exp))
 res <- chisq.test(obs, p = exp2)
 chi_squared <- chisq.test(obs, p = exp2)$statistic
-p <- chisq.test(obs, p = exp2)$p.value
+p-value <- chisq.test(obs, p = exp2)$p.value
 df <- chisq.test(obs, p = exp2)$parameter
 CNTRB <- (obs - exp)^2/exp
-cat(paste0("X2GOF-Test\nX2 = ", chi_squared, "\np = ", p, "\ndf = ", df, "\nCNTRB = {", paste(CNTRB, collapse = ", "), "}"))
+cat(paste0("X2GOF-Test \nX2 = ", chi_squared, " \np-value = ", p-value, " \ndf = ", df, " \nCNTRB = {", paste(CNTRB, collapse = ", "), "}"))
 
 
 #LinReg T test
@@ -226,10 +319,10 @@ a <- summary(model)$coefficients["(Intercept)", "Estimate"]
 b <- summary(model)$coefficients["explanatory", "Estimate"]
 s <- summary(model)$sigma
 t <- summary(model)$coefficients[6]
-p <- summary(model)$coefficients[8]
+p-value <- summary(model)$coefficients[8]
 r_squared <- summary(model)$r.squared
 r <- cor(response, explanatory)
-cat(paste0("LinRegTTest\ny = a + bx\nβ ≠ 0\nt = ", t, "\np = ", p, "\ndf = ", df, "\na = ", a, "\nb = ", b, "\ns = ", s, "\nr^2 = ", r_squared, "\nr = ", r))
+cat(paste0("LinRegTTest \ny = a + bx \nβ ≠ 0 \nt = ", t, " \np-value = ", p-value, " \ndf = ", df, " \na = ", a, " \nb = ", b, " \ns = ", s, " \nr^2 = ", r_squared, " \nr = ", r))
 
 
 #LinReg T Int
@@ -245,5 +338,5 @@ r <- cor(response, explanatory)
 interval <- confint(model, 'explanatory', level=0.95)
 lower <- interval[1]
 upper <- interval[2]
-cat(paste0("LinRegTInt\ny = a + bx\n(", lower, ", ", upper, ")\nb = ", b, "\ndf = ", df, "\ns = ", s, "\na = ", a, "\nr^2 = ", r_squared, "\nr = ", r))
+cat(paste0("LinRegTInt \ny = a + bx \n(", lower, ", ", upper, ") \nb = ", b, " \ndf = ", df, " \ns = ", s, " \na = ", a, " \nr^2 = ", r_squared, " \nr = ", r))
 
