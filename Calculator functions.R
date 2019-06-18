@@ -11,7 +11,7 @@ signs = as.numeric(data[,6])
 L1 <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
 n <- length(x)
 result <- c(mean(L1), sum(L1), sum(L1^2), sd(L1), sqrt((n-1)/n) * sd(L1), n, quantile(L1))    
-names(result) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "minX", "Q1", "Med", "Q3", "maxX")
+names(result) <- c("x-bar", "Σx", "Σx^2", "Sx", "σx", "n", "minX", "Q1", "Med", "Q3", "maxX")
 print(result)
 
 
@@ -24,8 +24,7 @@ L2 <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
 n <- length(L1 & L2)
 result <- c(mean(L1), sum(L1), sum(L1^2), sd(L1), sqrt((n-1)/n) * sd(L1), n, mean(L2), sum(L2), sum(L2^2), sd(L2), 
          sqrt((n-1)/n) * sd(L2), sum(L1 * L2), min(L1), max(L1), min(L2), max(L2))
-names(result) <- c("Mean of x", "Sum of x", "Sum of x^2", "Sample Std Error of x", "Pop Std Error of x", "n", "Mean of y", "Sum of y", 
-                "Sum of y^2", "Sample Std Error of y", "Pop Std Error of y", "Sum of x*y", "minX", "maxX", "minY", "maxY")
+names(result) <- c("x-bar", "Σx", "Σx^2", "Sx", "σx", "n", "y-bar", "Σy", "Σy^2", "Sy", "σy", "Σxy", "minX", "maxX", "minY", "maxY")
 print(result)
 
 
@@ -194,21 +193,31 @@ exp <- c(1/2, 1/3, 1/6)
 res <- chisq.test(obs, p = exp)
 chisq.test(obs, p = exp)$expected
 
+#----------------------------------------------------------FINISHED------------------------------------------------------
 
 #LinReg T test
-model = lm(rate ~ signs)
-summary(model)
+explanatory <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
+response <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
+model <- lm(response ~ explanatory)
+df <- model$df.residual
+a <- summary(model)$coefficients["(Intercept)", "Estimate"]
+b <- summary(model)$coefficients["explanatory", "Estimate"]
+s <- summary(model)$sigma
+t <- summary(model)$coefficients[6]
+p <- summary(model)$coefficients[8]
+r_squared <- summary(model)$r.squared
+r <- cor(response, explanatory)
+cat(paste0("y = a + bx\nβ ≠ 0\nt = ", t, "\np = ", p, "\ndf = ", df, "\na = ", a, "\nb = ", b, "\ns = ", s, "\nr^2 = ", r_squared, "\nr = ", r))
 
-#----------------------------------------------------------FINISHED------------------------------------------------------
 
 #LinReg T Int
 explanatory <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
 response <- c(52, 36, 71, 21, 57, 79, 63, 55, 31, 70)
 model <- lm(response ~ explanatory)
+df <- model$df.residual
 a <- summary(model)$coefficients["(Intercept)", "Estimate"]
 b <- summary(model)$coefficients["explanatory", "Estimate"]
-df <- model$df.residual
-s <- sigma(model)
+s <- summary(model)$sigma
 r_squared <- summary(model)$r.squared
 r <- cor(response, explanatory)
 interval <- confint(model, 'explanatory', level=0.95)
