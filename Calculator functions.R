@@ -199,6 +199,7 @@ chisq.test(obs, p = exp)$expected
 model = lm(rate ~ signs)
 summary(model)
 
+#----------------------------------------------------------FINISHED------------------------------------------------------
 
 #LinReg T Int
 explanatory <- c(2, 47, 4, 75, 35, 77, 49, 14, 24, 21)
@@ -207,11 +208,11 @@ model <- lm(response ~ explanatory)
 a <- summary(model)$coefficients["(Intercept)", "Estimate"]
 b <- summary(model)$coefficients["explanatory", "Estimate"]
 df <- model$df.residual
-s <- 1
-r_squared <- 1
+s <- sigma(model)
+r_squared <- summary(model)$r.squared
 r <- cor(response, explanatory)
 interval <- confint(model, 'explanatory', level=0.95)
 lower <- interval[1]
 upper <- interval[2]
-cat(paste0("y = a + bx\n(", lower, ", ", upper, ")\nb = ", b, "\ndf = ", df, "\na = ", a))
+cat(paste0("y = a + bx\n(", lower, ", ", upper, ")\nb = ", b, "\ndf = ", df, "\ns = ", s, "\na = ", a, "\nr^2 = ", r_squared, "\nr = ", r))
 
