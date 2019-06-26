@@ -18,8 +18,8 @@ The purpose of this project is to make a simple calculator program using R that 
 * TInterval
 * InvT
 * Tcdf
-* X2-GOF
-* X2-Test
+* χ²-GOF
+* χ²-Test
 * LinReg<br>
 * LinRegTTest
 * LinRegTInt
